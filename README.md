@@ -113,6 +113,6 @@ Cycle 031 | RUL: 75.0 | Status:  HEALTHY | Top Sensors: sensor_11, sensor_14, se
 | **Complexity** | High (~683K parameters) | Medium (~323K parameters) |
 | **Focus** | Temporal Context | Pattern Extraction & Computational Efficiency |
 
-*Switch architectures (`cfg.model.arch`) or evaluate different CMAPSS subsets (`cfg.data.subset` from "FD001" to "FD004") easily by updating `src/config.py`.*
+Switch architectures (`cfg.model.arch`) or evaluate different CMAPSS subsets (`cfg.data.subset` from "FD001" to "FD004") easily by updating `src/config.py`.
 ---
 *Built for the vHack USM Hackathon 2026. Data sourced from the [NASA PCoE Dataset Repository](https://www.nasa.gov/).*
