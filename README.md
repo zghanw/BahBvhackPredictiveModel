@@ -1,5 +1,6 @@
 # Predictive Maintenance — Remaining Useful Life (RUL) Estimator
 
+**Team Britney and her Bodyguards' Predictive Model**
 A hackathon-grade deep learning pipeline using **PyTorch** to predict RUL of industrial machinery from multivariate sensor time-series (NASA CMAPSS dataset).
 
 ## Project Structure
