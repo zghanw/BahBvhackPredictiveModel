@@ -62,7 +62,7 @@ vhackusm/
 
 ## 🚀 Quick Start
 
-We invite the judges to run our pipeline and verify our performance target.
+Steps needed to run our pipeline and verify our performance target.
 
 ### 1. Setup & Data
 ```bash
