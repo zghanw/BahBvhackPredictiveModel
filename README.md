@@ -107,7 +107,7 @@ Cycle 031 | RUL: 75.0 | Status:  HEALTHY | Top Sensors: sensor_11, sensor_14, se
 
 ## 🧠 Model Comparison
 
-| Feature | BiLSTM | CNN-LSTM (Default) |
+| Feature | BiLSTM (Default) | CNN-LSTM |
 | :--- | :--- | :--- |
 | **Logic** | Reads the 30-cycle window in both directions to understand health based on history and future context. | Uses a CNN to extract local severity patterns and an LSTM to model overall long-range degradation. |
 | **Complexity** | High (~683K parameters) | Medium (~323K parameters) |
