@@ -55,7 +55,7 @@ def extract_top_sensors(weights: torch.Tensor | None, sensor_cols: list[str], to
     return ["sensor_11 (temp)", "sensor_14 (speed)", "sensor_09 (flow)"]
 
 
-def run_dashboard_simulation(engine_id: int = 1, ckpt_path: Path = CKPT_DIR / "best_model.pt", delay: float = 0.5):
+def run_dashboard_simulation(engine_id: int = 3, ckpt_path: Path = CKPT_DIR / "best_model.pt", delay: float = 0.5):
     """
     Simulates a real-time data feed for a single engine, running inference cycle-by-cycle.
     """

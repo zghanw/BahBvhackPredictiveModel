@@ -28,9 +28,9 @@ Our pipeline significantly outperforms the hackathon targets, proving its readin
 
 | Metric     | Target | **Our Result (CNN-LSTM)** |
 |------------|--------|---------------------------|
-| **RMSE**   | < 30   | **14.12** cycles          |
-| **MAE**    | < 20   | **9.27** cycles           |
-| **NASA Score** | -  | **~950**                  |
+| **RMSE**   | < 30   | **11.78** cycles          |
+| **MAE**    | < 20   | **16.16** cycles           |
+| **NASA Score** | -  | **~453**                  |
 
 *Note: The NASA Score is calculated strictly on the last recorded cycle of each test engine (Official CMAPSS Benchmark standard), while MAE and RMSE showcase our model's performance on continuous real-time sequences.*
 *Achieved a Best Validation RMSE of **8.52** during training.*
@@ -94,11 +94,11 @@ python -m src.inference_api
 
 **Expected Output:**
 ```text
-Loading data to simulate engine 1...
+Loading data to simulate engine 3...
 ...
---- Starting Real-Time Simulation for Engine 1 ---
-Cycle 030 | RUL: 121.4 | Status:  HEALTHY | Top Sensors: sensor_11, sensor_14, sensor_09
-Cycle 031 | RUL: 120.8 | Status:  HEALTHY | Top Sensors: sensor_11, sensor_14, sensor_09
+--- Starting Real-Time Simulation for Engine 3 ---
+Cycle 030 | RUL: 88.9 | Status:  HEALTHY | Top Sensors: sensor_11, sensor_14, sensor_09
+Cycle 031 | RUL: 75.0 | Status:  HEALTHY | Top Sensors: sensor_11, sensor_14, sensor_09
 ...
 ```
 *(This generates a continuous feed in `outputs/dashboard_data.json` simulating a live engine).*
