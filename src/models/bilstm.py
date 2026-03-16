@@ -59,20 +59,26 @@ class BiLSTMModel(nn.Module):
             nn.Linear(64, 1),
         )
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def forward(self, x: torch.Tensor, return_attention: bool = False) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor | None]:
         """
         Args:
             x: (batch, window_size, input_size)
+            return_attention: If True, returns (rul, attention_weights)
 
         Returns:
             rul: (batch,) — predicted RUL in cycles
+            weights: (batch, window_size) — attention weights (if return_attention=True)
         """
         out, _ = self.lstm(x)     # out: (batch, seq, hidden*2)
 
         if self.use_attention:
-            context, _ = self.attention(out)   # (batch, hidden*2)
+            context, weights = self.attention(out)   # context: (batch, hidden*2), weights: (batch, seq)
         else:
             context = out[:, -1, :]            # take last time step
+            weights = None
 
         rul = self.head(context).squeeze(-1)   # (batch,)
+        
+        if return_attention:
+            return rul, weights
         return rul

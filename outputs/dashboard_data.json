@@ -1,0 +1,13 @@
+{
+    "engine_id": 1,
+    "cycle": 31,
+    "predicted_rul": 123.7,
+    "status": "Healthy",
+    "anomaly_threshold_cycles": 30,
+    "top_contributing_sensors": [
+        "sensor_11",
+        "sensor_14",
+        "sensor_09"
+    ],
+    "timestamp": 1773651633.381554
+}

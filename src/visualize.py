@@ -128,3 +128,52 @@ def plot_training_history(
         print(f"  Saved → {path}")
     plt.show()
     plt.close()
+
+
+def plot_attention_weights(
+    weights: np.ndarray,
+    cycle: int,
+    engine_id: int = 1,
+    save: bool = True,
+) -> None:
+    """
+    Plot the attention weights over the sliding window to see which past cycles
+    the model considers most important for its current prediction.
+    
+    Args:
+        weights: array of shape (window_size,)
+        cycle: The current cycle we are predicting for
+    """
+    window_size = len(weights)
+    x_axis = np.arange(cycle - window_size + 1, cycle + 1)
+    
+    fig, ax = plt.subplots(figsize=(10, 4))
+    
+    # Bar plot is good for discrete time steps
+    bars = ax.bar(x_axis, weights, color=PRED_COLOR, alpha=0.8, edgecolor="white")
+    
+    # Highlight the max attention cycle
+    max_idx = np.argmax(weights)
+    bars[max_idx].set_color(TRUE_COLOR)
+    
+    ax.set_title(f"Attention Weights for Engine {engine_id} at Cycle {cycle}", fontsize=FONT_TITLE, fontweight="bold")
+    ax.set_xlabel("Cycle", fontsize=FONT_LABEL)
+    ax.set_ylabel("Attention Weight", fontsize=FONT_LABEL)
+    ax.grid(True, axis="y", alpha=GRID_ALPHA)
+    
+    # Add a text annotation for the top cycle
+    ax.annotate(f"Max Attn\nCycle {x_axis[max_idx]}",
+                xy=(x_axis[max_idx], weights[max_idx]),
+                xytext=(0, 15),
+                textcoords="offset points",
+                ha='center', va='bottom',
+                fontsize=9, color=TRUE_COLOR, fontweight="bold")
+
+    plt.tight_layout()
+    if save:
+        path = FIG_DIR / f"attention_weights_E{engine_id}_C{cycle}.png"
+        fig.savefig(path, dpi=150)
+        print(f"  Saved → {path}")
+    plt.show()
+    plt.close()
+

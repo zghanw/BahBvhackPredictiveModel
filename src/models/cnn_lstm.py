@@ -80,13 +80,15 @@ class CNNLSTMModel(nn.Module):
             nn.Linear(64, 1),
         )
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def forward(self, x: torch.Tensor, return_attention: bool = False) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor | None]:
         """
         Args:
             x: (batch, window_size, input_size)
+            return_attention: If True, returns (rul, attention_weights)
 
         Returns:
             rul: (batch,) — predicted RUL in cycles
+            weights: (batch, window_size) — attention weights (if return_attention=True)
         """
         # Conv1d expects (batch, channels, seq) — transpose
         x = x.transpose(1, 2)             # → (batch, features, window)
@@ -96,9 +98,13 @@ class CNNLSTMModel(nn.Module):
         out, _ = self.lstm(x)             # → (batch, window, hidden)
 
         if self.use_attention:
-            context, _ = self.attention(out)    # (batch, hidden)
+            context, weights = self.attention(out)    # context: (batch, hidden), weights: (batch, window)
         else:
             context = out[:, -1, :]             # last step
+            weights = None
 
         rul = self.head(context).squeeze(-1)    # (batch,)
+        
+        if return_attention:
+            return rul, weights
         return rul

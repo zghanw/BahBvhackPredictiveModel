@@ -76,23 +76,45 @@ def evaluate(ckpt_path: Path = CKPT_DIR / "best_model.pt"):
     print("\nRunning test inference ...")
     preds, targets = run_inference(model, test_loader, device)
 
-    mae   = compute_mae(preds, targets)
-    rmse_ = compute_rmse(preds, targets)
-    score = compute_nasa_score(preds, targets)
+    # ── Official CMAPSS benchmark extraction ──────────────────────────────────
+    # The official benchmark only evaluates the VERY LAST cycle of each engine.
+    # Since test_loader has shuffle=False, we can find the indices of the last cycle.
+    import numpy as np
+    engine_seq_counts = [max(1, len(group) - cfg.data.window_size + 1) for _, group in test_df.groupby("engine_id")]
+    last_indices = np.cumsum(engine_seq_counts) - 1
 
-    print(f"\n{'='*40}")
-    print(f"  Test Results ({cfg.data.subset})")
-    print(f"{'='*40}")
-    print(f"  MAE   : {mae:.4f} cycles")
-    print(f"  RMSE  : {rmse_:.4f} cycles")
-    print(f"  Score : {score:.2f}  (↓ lower is better)")
-    print(f"{'='*40}\n")
+    last_preds = preds[last_indices]
+    last_targets = targets[last_indices]
+
+    # Metrics on ALL cycles (continuous monitoring)
+    mae_all   = compute_mae(preds, targets)
+    rmse_all  = compute_rmse(preds, targets)
+    score_all = compute_nasa_score(preds, targets)
+
+    # Metrics on LAST cycles (official benchmark)
+    mae_official   = compute_mae(last_preds, last_targets)
+    rmse_official  = compute_rmse(last_preds, last_targets)
+    score_official = compute_nasa_score(last_preds, last_targets)
+
+    print(f"\n{'='*50}")
+    print(f"  Test Results ({cfg.data.subset}) — CONTINUOUS (All {len(preds)} samples)")
+    print(f"{'='*50}")
+    print(f"  MAE   : {mae_all:.4f} cycles")
+    print(f"  RMSE  : {rmse_all:.4f} cycles")
+    print(f"  Score : {score_all:.2f}  (Naturally large due to summation)")
+    
+    print(f"\n{'='*50}")
+    print(f"  🏆 OFFICIAL CMAPSS BENCHMARK (Last {len(last_preds)} samples only)")
+    print(f"{'='*50}")
+    print(f"  MAE   : {mae_official:.4f} cycles")
+    print(f"  RMSE  : {rmse_official:.4f} cycles")
+    print(f"  Score : {score_official:.2f}  (Official NASA Score)")
+    print(f"{'='*50}\n")
 
     plot_rul_curves(preds, targets)
     plot_error_distribution(preds, targets)
 
-    return {"mae": mae, "rmse": rmse_, "score": score}
-
+    return {"mae": mae_official, "rmse": rmse_official, "score": score_official}
 
 if __name__ == "__main__":
     evaluate()
