@@ -47,7 +47,7 @@ Our pipeline significantly outperforms the set targets, proving its readiness fo
 | **MAE**    | < 20   | **10.23** cycles          | **10.59** cycles        |
 | **NASA Score** | -  | **928.95**                | **485.53**              |
 
-### CMAPSS FD003
+### CMAPSS FD004
 | Metric     | Target | **Our Result (CNN-LSTM)** | **Our Result (BiLSTM)** |
 |------------|--------|---------------------------|-------------------------|
 | **RMSE**   | < 30   | **28.41** cycles          | **25.28** cycles        |
