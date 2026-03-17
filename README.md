@@ -18,22 +18,22 @@ We developed a robust, scalable PyTorch pipeline tailored to the constraints of 
 1. **Temporal Feature Engineering (Robust Noise Handling):** Raw sensors are noisy. We utilize rolling statistics and Exponentially Weighted Moving Averages (EWMA) per engine to separate actual degradation trends from environmental noise.
 2. **Advanced RUL Regression Modeling:** We implemented both **BiLSTM** and **CNN-LSTM** hybrid architectures. The CNN acts as a learned feature extractor for local spikes, while the LSTM models long-range degradation dependencies.
 3. **Explicit Anomaly Change-Point Detection:** Our `inference_api.py` doesn't just output a number; it explicitly monitors the exact moment a machine transitions from "Healthy" to "Impaired" (e.g., when predicted RUL drops below a critical threshold).
-4. **Actionable Actionable & Interpretability:** Factory operators need to trust the AI. We integrated a custom `AdditiveAttention` layer that highlights *exactly* which past cycles and which specific sensors (e.g., Temperature, Speed) the model is focusing on to warn of an impending failure.
+4. **Actionable & Interpretability:** Factory operators need to trust the AI. We integrated a custom `AdditiveAttention` layer that highlights *exactly* which past cycles and which specific sensors (e.g., Temperature, Speed) the model is focusing on to warn of an impending failure.
 
 ---
 
-## 🏆 Achieved Results (CMAPSS FD001)
+## 🏆 Achieved Results
 
 Our pipeline significantly outperforms the hackathon targets, proving its readiness for real-world SME deployment.
 
+# CMAPSS FD001
 | Metric     | Target | **Our Result (CNN-LSTM)** |
 |------------|--------|---------------------------|
 | **RMSE**   | < 30   | **11.78** cycles          |
-| **MAE**    | < 20   | **16.16** cycles           |
+| **MAE**    | < 20   | **16.16** cycles          |
 | **NASA Score** | -  | **~453**                  |
 
 *Note: The NASA Score is calculated strictly on the last recorded cycle of each test engine (Official CMAPSS Benchmark standard), while MAE and RMSE showcase our model's performance on continuous real-time sequences.*
-*Achieved a Best Validation RMSE of **8.52** during training.*
 
 ---
 
@@ -76,7 +76,7 @@ pip install -r requirements.txt
 ### 2. Full Training & Evaluation Pipeline
 ```bash
 # Train the model
-python -m src.train
+python -m src.train  --arch (bilstm/cnn_lstm)
 
 # Evaluate predictions and generate interpretability plots
 python -m src.evaluate
