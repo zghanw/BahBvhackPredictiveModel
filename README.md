@@ -24,21 +24,35 @@ We developed a robust, scalable PyTorch pipeline tailored to the constraints of 
 
 ## 🏆 Achieved Results
 
-Our pipeline significantly outperforms the hackathon targets, proving its readiness for real-world SME deployment.
+Our pipeline significantly outperforms the set targets, proving its readiness for real-world SME deployment.
 
 ### CMAPSS FD001
 | Metric     | Target | **Our Result (CNN-LSTM)** | **Our Result (BiLSTM)** |
 |------------|--------|---------------------------|-------------------------|
-| **RMSE**   | < 30   | **11.03** cycles          | **10.24** cycles        |
-| **MAE**    | < 20   | **15.26** cycles          | **14.28** cycles        |
+| **RMSE**   | < 30   | **15.26** cycles          | **14.28** cycles        |
+| **MAE**    | < 20   | **11.03** cycles          | **10.24** cycles        |
 | **NASA Score** | -  | **454.84**                | **406.62**              |
 
 ### CMAPSS FD002
 | Metric     | Target | **Our Result (CNN-LSTM)** | **Our Result (BiLSTM)** |
 |------------|--------|---------------------------|-------------------------|
-| **RMSE**   | < 30   | **13.30** cycles          | **14.35** cycles        |
-| **MAE**    | < 20   | **19.22** cycles          | **19.84** cycles        |
-| **NASA Score** | -  | **2693.88**                | **2664.65**              |
+| **RMSE**   | < 30   | **19.22** cycles          | **19.84** cycles        |
+| **MAE**    | < 20   | **13.30** cycles          | **14.35** cycles        |
+| **NASA Score** | -  | **2693.88**               | **2664.65**             |
+
+### CMAPSS FD003
+| Metric     | Target | **Our Result (CNN-LSTM)** | **Our Result (BiLSTM)** |
+|------------|--------|---------------------------|-------------------------|
+| **RMSE**   | < 30   | **15.32** cycles          | **15.31** cycles        |
+| **MAE**    | < 20   | **10.23** cycles          | **10.59** cycles        |
+| **NASA Score** | -  | **928.95**                | **485.53**              |
+
+### CMAPSS FD003
+| Metric     | Target | **Our Result (CNN-LSTM)** | **Our Result (BiLSTM)** |
+|------------|--------|---------------------------|-------------------------|
+| **RMSE**   | < 30   | **28.41** cycles          | **25.28** cycles        |
+| **MAE**    | < 20   | **20.87** cycles          | **18.11** cycles        |
+| **NASA Score** | -  | **19145.07**              | **14286.67**            |
 
 *Note: The NASA Score is calculated strictly on the last recorded cycle of each test engine (Official CMAPSS Benchmark standard), while MAE and RMSE showcase our model's performance on continuous real-time sequences.*
 
@@ -87,6 +101,12 @@ python -m src.train  --arch (bilstm/cnn_lstm) --subset FD00(1-4)
 
 # Evaluate predictions and generate interpretability plots
 python -m src.evaluate --arch (bilstm/cnn_lstm) --subset FD00(1-4)
+```
+
+**Example (Architecure and subset has to be the same for both training and evaluation for a correct result.)**
+```bash
+python -m src.train --arch bilstm --subset FD001
+python -m src.evaluate --arch bilstm --subset FD001
 ```
 
 This will automatically save all visualizations to the `outputs/figures/` directory, including:
