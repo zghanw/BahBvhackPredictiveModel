@@ -63,14 +63,14 @@ def run_inference(model: nn.Module, loader: DataLoader,
 def evaluate(ckpt_path: Path = CKPT_DIR / "best_model.pt"):
     device = get_device(cfg.train.device)
 
-    # FIXED: Auto-detect architecture from checkpoint
+    # Auto-detect architecture from checkpoint
     checkpoint = torch.load(ckpt_path, map_location='cpu')
     if any('cnn.' in key for key in checkpoint.keys()):
         cfg.model.arch = 'cnn_lstm'
-        print(f"Detected CNN-LSTM architecture from checkpoint")
+        print(f"Detected CNN-LSTM architecture")
     else:
         cfg.model.arch = 'bilstm'
-        print(f"Detected BiLSTM architecture from checkpoint")
+        print(f"Detected BiLSTM architecture")
 
     print("\nPreparing data ...")
     train_df, test_df, sensor_cols = prepare_data(cfg)
@@ -80,7 +80,12 @@ def evaluate(ckpt_path: Path = CKPT_DIR / "best_model.pt"):
 
     print(f"Loading model from: {ckpt_path}")
     model = build_model(len(feature_cols), cfg).to(device)
-    model.load_state_dict(torch.load(ckpt_path, map_location=device))
+    # Handle both old and new checkpoint formats
+    checkpoint = torch.load(ckpt_path, map_location=device)
+    if isinstance(checkpoint, dict) and 'model_state_dict' in checkpoint:
+        model.load_state_dict(checkpoint['model_state_dict'])
+    else:
+        model.load_state_dict(checkpoint)
 
     print("\nRunning test inference ...")
     preds, targets = run_inference(model, test_loader, device)
@@ -126,4 +131,17 @@ def evaluate(ckpt_path: Path = CKPT_DIR / "best_model.pt"):
     return {"mae": mae_official, "rmse": rmse_official, "score": score_official}
 
 if __name__ == "__main__":
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--subset", default=None, choices=["FD001","FD002","FD003","FD004"],
+                        help="Override CMAPSS subset")
+    parser.add_argument("--arch", default=None, choices=["bilstm", "cnn_lstm"],
+                        help="Override model architecture")
+    args = parser.parse_args()
+
+    if args.subset:
+        cfg.data.subset = args.subset
+    if args.arch:
+        cfg.model.arch = args.arch
+
     evaluate()
