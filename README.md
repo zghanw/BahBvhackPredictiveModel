@@ -27,11 +27,11 @@ We developed a robust, scalable PyTorch pipeline tailored to the constraints of 
 Our pipeline significantly outperforms the hackathon targets, proving its readiness for real-world SME deployment.
 
 # CMAPSS FD001
-| Metric     | Target | **Our Result (CNN-LSTM)** |
-|------------|--------|---------------------------|
-| **RMSE**   | < 30   | **11.78** cycles          |
-| **MAE**    | < 20   | **16.16** cycles          |
-| **NASA Score** | -  | **~453**                  |
+| Metric     | Target | **Our Result (CNN-LSTM)** | **Our Result (BiLSTM)** |
+|------------|--------|---------------------------|-------------------------|
+| **RMSE**   | < 30   | **11.03** cycles          | **10.24** cycles        |
+| **MAE**    | < 20   | **15.26** cycles          | **14.28** cycles        |
+| **NASA Score** | -  | **454.84**                | **406.62**              |
 
 *Note: The NASA Score is calculated strictly on the last recorded cycle of each test engine (Official CMAPSS Benchmark standard), while MAE and RMSE showcase our model's performance on continuous real-time sequences.*
 
@@ -76,7 +76,7 @@ pip install -r requirements.txt
 ### 2. Full Training & Evaluation Pipeline
 ```bash
 # Train the model
-python -m src.train  --arch (bilstm/cnn_lstm)
+python -m src.train  --arch (bilstm/cnn_lstm) --subset FD00(1-4)
 
 # Evaluate predictions and generate interpretability plots
 python -m src.evaluate
@@ -113,6 +113,5 @@ Cycle 031 | RUL: 75.0 | Status:  HEALTHY | Top Sensors: sensor_11, sensor_14, se
 | **Complexity** | High (~683K parameters) | Medium (~323K parameters) |
 | **Focus** | Temporal Context | Pattern Extraction & Computational Efficiency |
 
-Switch architectures (`cfg.model.arch`) or evaluate different CMAPSS subsets (`cfg.data.subset` from "FD001" to "FD004") easily by updating `src/config.py`.
 ---
 *Built for the vHack USM Hackathon 2026. Data sourced from the [NASA Turbofan Jet Engine Data Set](https://www.kaggle.com/datasets/behrad3d/nasa-cmaps).*
