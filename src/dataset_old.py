@@ -12,7 +12,7 @@ WHY THIS MATTERS:
 import numpy as np
 import pandas as pd
 import torch
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import Dataset, DataLoader, random_split
 from src.config import DataConfig, TrainConfig
 from src.feature_engineer import get_feature_columns
 
@@ -41,21 +41,11 @@ class CMAPSSDataset(Dataset):
 
     def _build_sequences(self, df: pd.DataFrame, feature_cols: list[str]) -> None:
         """Extract sliding-window (X, y) pairs per engine."""
-        # FIXED: Add input validation
-        if df.empty:
-            raise ValueError("Input DataFrame is empty")
-        if 'rul' not in df.columns:
-            raise ValueError("DataFrame must contain 'rul' column")
-        
         for _, engine_df in df.groupby("engine_id"):
             engine_df = engine_df.sort_values("cycle")
             data = engine_df[feature_cols].values.astype(np.float32)
             rul  = engine_df["rul"].values.astype(np.float32)
             n = len(data)
-
-            # FIXED: Add shape validation
-            if data.shape[1] != len(feature_cols):
-                raise ValueError(f"Feature dimension mismatch: expected {len(feature_cols)}, got {data.shape[1]}")
 
             if n < self.window_size:
                 # Engine has fewer cycles than window — pad with zeros at the front
@@ -87,28 +77,24 @@ def get_dataloaders(
     """
     Build train, validation, and test DataLoaders from preprocessed DataFrames.
 
-    Validation split: ENGINE-LEVEL split to prevent data leakage.
-    Randomly selects engines for validation, not individual sequences.
+    Validation split: random subset of training sequences (not engines).
+    This is the simplest strategy; for a more rigorous split you could
+    hold out specific engine IDs.
 
     Returns:
         train_loader, val_loader, test_loader, feature_cols
     """
     feature_cols = get_feature_columns(sensor_cols)
 
-    # ── ENGINE-LEVEL validation split (prevents data leakage) ──────────────
-    unique_engines = train_df['engine_id'].unique()
-    np.random.seed(data_cfg.seed)
-    np.random.shuffle(unique_engines)
-    
-    n_val_engines = max(1, int(len(unique_engines) * data_cfg.val_split))
-    val_engines = set(unique_engines[:n_val_engines])
-    
-    train_engines_df = train_df[~train_df['engine_id'].isin(val_engines)]
-    val_engines_df = train_df[train_df['engine_id'].isin(val_engines)]
-    
-    # ── Build datasets ────────────────────────────────────────────────────
-    train_ds = CMAPSSDataset(train_engines_df, feature_cols, data_cfg.window_size)
-    val_ds = CMAPSSDataset(val_engines_df, feature_cols, data_cfg.window_size)
+    # ── Build full training dataset, then split ───────────────────────────
+    full_train_ds = CMAPSSDataset(train_df, feature_cols, data_cfg.window_size)
+    n_val   = int(len(full_train_ds) * data_cfg.val_split)
+    n_train = len(full_train_ds) - n_val
+
+    torch.manual_seed(data_cfg.seed)
+    train_ds, val_ds = random_split(full_train_ds, [n_train, n_val])
+
+    # ── Test dataset ──────────────────────────────────────────────────────
     test_ds = CMAPSSDataset(test_df, feature_cols, data_cfg.window_size)
 
     loader_kwargs = dict(
@@ -121,9 +107,7 @@ def get_dataloaders(
     val_loader   = DataLoader(val_ds,   shuffle=False, **loader_kwargs)
     test_loader  = DataLoader(test_ds,  shuffle=False, **loader_kwargs)
 
-    print(f"Dataset sizes -> train: {len(train_ds):,} ({len(unique_engines) - n_val_engines} engines)")
-    print(f"              -> val: {len(val_ds):,} ({n_val_engines} engines)")  
-    print(f"              -> test: {len(test_ds):,}")
-    print(f"Input shape   -> (batch, {data_cfg.window_size}, {len(feature_cols)})")
+    print(f"Dataset sizes → train: {n_train:,}  val: {n_val:,}  test: {len(test_ds):,}")
+    print(f"Input shape   → (batch, {data_cfg.window_size}, {len(feature_cols)})")
 
     return train_loader, val_loader, test_loader, feature_cols

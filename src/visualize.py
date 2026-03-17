@@ -55,7 +55,7 @@ def plot_rul_curves(
     if save:
         path = FIG_DIR / "rul_prediction_curve.png"
         fig.savefig(path, dpi=150)
-        print(f"  Saved → {path}")
+        print(f"  Saved -> {path}")
     plt.show()
     plt.close()
 
@@ -89,7 +89,7 @@ def plot_error_distribution(
     if save:
         path = FIG_DIR / "error_distribution.png"
         fig.savefig(path, dpi=150)
-        print(f"  Saved → {path}")
+        print(f"  Saved -> {path}")
     plt.show()
     plt.close()
 
@@ -102,8 +102,8 @@ def plot_training_history(
     """
     Plot training loss and validation RMSE over epochs.
     Useful for diagnosing overfitting vs. underfitting:
-      - Val RMSE diverging up while train loss drops → overfitting
-      - Both flat → underfitting / learning rate too low
+      - Val RMSE diverging up while train loss drops -> overfitting
+      - Both flat -> underfitting / learning rate too low
     """
     epochs = range(1, len(train_losses) + 1)
 
@@ -125,7 +125,7 @@ def plot_training_history(
     if save:
         path = FIG_DIR / "training_history.png"
         fig.savefig(path, dpi=150)
-        print(f"  Saved → {path}")
+        print(f"  Saved -> {path}")
     plt.show()
     plt.close()
 
@@ -173,7 +173,7 @@ def plot_attention_weights(
     if save:
         path = FIG_DIR / f"attention_weights_E{engine_id}_C{cycle}.png"
         fig.savefig(path, dpi=150)
-        print(f"  Saved → {path}")
+        print(f"  Saved -> {path}")
     plt.show()
     plt.close()
 

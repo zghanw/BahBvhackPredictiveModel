@@ -94,6 +94,9 @@ def add_test_rul_labels(test_df: pd.DataFrame,
     groups = []
     for engine_id, group in test_df.groupby("engine_id"):
         group = group.copy().sort_values("cycle")
+        # FIXED: Add bounds checking for engine_id indexing
+        if engine_id - 1 >= len(last_rul):
+            raise ValueError(f"Engine ID {engine_id} not found in RUL series")
         final_rul = last_rul[engine_id - 1]
         n = len(group)
         # RUL decreases by 1 each cycle

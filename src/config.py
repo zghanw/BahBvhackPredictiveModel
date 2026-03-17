@@ -61,14 +61,14 @@ class ModelConfig:
 class TrainConfig:
     epochs: int = 100
     batch_size: int = 256
-    learning_rate: float = 1e-3
+    learning_rate: float = 5e-4        # Reduced for more stable training
     weight_decay: float = 1e-4         # AdamW regularisation
-    patience: int = 15                  # Early stopping patience (epochs)
+    patience: int = 20                  # Increased patience for better convergence
     min_delta: float = 0.1             # Minimum improvement to reset patience
     scheduler: str = "cosine"          # "cosine" | "step" | "none"
     clip_grad_norm: float = 1.0        # Gradient clipping max norm
     num_workers: int = 0               # DataLoader workers (0 = main process)
-    device: str = "cpu"               # "auto" | "cpu"
+    device: str = "auto"               # "auto" | "cpu" | "cuda"
 
 
 @dataclass

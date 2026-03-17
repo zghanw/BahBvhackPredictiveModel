@@ -82,7 +82,7 @@ def prepare_data(config: Config):
 class EarlyStopping:
     """Stop training when validation RMSE stops improving."""
 
-    def __init__(self, patience: int = 15, min_delta: float = 0.01,  # Reduced min_delta
+    def __init__(self, patience: int = 15, min_delta: float = 0.1,
                  ckpt_path: Path = CKPT_DIR / "best_model.pt"):
         self.patience  = patience
         self.min_delta = min_delta
@@ -97,14 +97,13 @@ class EarlyStopping:
             self.counter   = 0
             self.ckpt_path.parent.mkdir(parents=True, exist_ok=True)
             torch.save(model.state_dict(), self.ckpt_path)
-            print(f"  + New best val RMSE: {val_rmse:.4f} — checkpoint saved.")
+            print(f"  ✓ New best val RMSE: {val_rmse:.4f} — checkpoint saved.")
             return False
         else:
             self.counter += 1
-            print(f"  - No improvement ({self.counter}/{self.patience})")
+            print(f"  · No improvement ({self.counter}/{self.patience})")
             if self.counter >= self.patience:
-                print("  x Early stopping triggered.")
-                self.early_stop = True
+                print("  ✗ Early stopping triggered.")
                 return True
             return False
 
@@ -160,7 +159,7 @@ def train(config: Config = cfg, smoke_test: bool = False):
     n_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     print(f"\nModel: {config.model.arch}  |  Parameters: {n_params:,}")
 
-    criterion  = nn.SmoothL1Loss()  # More robust than MSE for outliers
+    criterion  = nn.MSELoss()
     optimizer  = AdamW(model.parameters(),
                        lr=config.train.learning_rate,
                        weight_decay=config.train.weight_decay)
@@ -188,6 +187,9 @@ def train(config: Config = cfg, smoke_test: bool = False):
             optimizer.step()
             total_loss += loss.item() * xb.size(0)
 
+        if scheduler:
+            scheduler.step()
+
         avg_loss = total_loss / len(train_loader.dataset)
 
         # ── Validation ────────────────────────────────────────────────────
@@ -211,13 +213,8 @@ def train(config: Config = cfg, smoke_test: bool = False):
         history["train_loss"].append(avg_loss)
         history["val_rmse"].append(val_rmse)
 
-        # ── Early stopping and scheduler step ─────────────────────────────
         if stopper(val_rmse, model):
             break
-            
-        # Only step scheduler if we're continuing training
-        if scheduler:
-            scheduler.step()
 
     print(f"\nBest Val RMSE: {stopper.best_rmse:.4f}")
     return model, history, stopper.ckpt_path

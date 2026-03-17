@@ -63,6 +63,15 @@ def run_inference(model: nn.Module, loader: DataLoader,
 def evaluate(ckpt_path: Path = CKPT_DIR / "best_model.pt"):
     device = get_device(cfg.train.device)
 
+    # FIXED: Auto-detect architecture from checkpoint
+    checkpoint = torch.load(ckpt_path, map_location='cpu')
+    if any('cnn.' in key for key in checkpoint.keys()):
+        cfg.model.arch = 'cnn_lstm'
+        print(f"Detected CNN-LSTM architecture from checkpoint")
+    else:
+        cfg.model.arch = 'bilstm'
+        print(f"Detected BiLSTM architecture from checkpoint")
+
     print("\nPreparing data ...")
     train_df, test_df, sensor_cols = prepare_data(cfg)
     _, _, test_loader, feature_cols = get_dataloaders(
@@ -104,7 +113,7 @@ def evaluate(ckpt_path: Path = CKPT_DIR / "best_model.pt"):
     print(f"  Score : {score_all:.2f}  (Naturally large due to summation)")
     
     print(f"\n{'='*50}")
-    print(f"  🏆 OFFICIAL CMAPSS BENCHMARK (Last {len(last_preds)} samples only)")
+    print(f"  ** OFFICIAL CMAPSS BENCHMARK (Last {len(last_preds)} samples only)")
     print(f"{'='*50}")
     print(f"  MAE   : {mae_official:.4f} cycles")
     print(f"  RMSE  : {rmse_official:.4f} cycles")
