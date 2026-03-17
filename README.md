@@ -102,6 +102,7 @@ graph TD
 ```
 
 **BiLSTM:** Best for temporal context, higher parameter count
+
 **CNN-LSTM:** More efficient, extracts local patterns before LSTM processing
 
 ---
