@@ -78,68 +78,7 @@ The Commercial Modular Aero-Propulsion System Simulation (CMAPSS) dataset simula
 ---
 ## 🏗️ Model Architecture
 
-### BiLSTM with Attention
-
-```mermaid
-graph TD
-    A[Input: 30 cycles × N features] --> B[Bidirectional LSTM<br/>2 layers, 128 units]
-    B --> C[Additive Attention<br/>Bahdanau-style]
-    C --> D[Fully Connected Head<br/>256 → 128 → 1]
-    D --> E[RUL Prediction]
-    
-    style A fill:#e1f5ff
-    style B fill:#fff4e1
-    style C fill:#ffe1f5
-    style D fill:#e1ffe1
-    style E fill:#ffe1e1
-```
-
-Our BiLSTM model processes 30-cycle windows bidirectionally, allowing it to understand degradation patterns from both past and future context. The attention mechanism identifies which specific cycles are most critical for failure prediction.
-
-**Key Features:**
-- **Bidirectional Processing:** Captures both historical trends and future context
-- **Attention Weights:** Provides interpretability by highlighting critical cycles
-- **Dropout Regularization:** Prevents overfitting (0.3 dropout rate)
-- **Parameters:** ~683K trainable parameters
-
----
-
-## Option 2: Detailed Pipeline (More comprehensive)
-
-
-## 🏗️ End-to-End Pipeline
-
-```mermaid
-graph LR
-    A[Raw Sensor Data<br/>21 sensors] --> B[Feature Engineering<br/>Rolling Stats + EWMA]
-    B --> C[Sliding Window<br/>30 cycles]
-    C --> D[BiLSTM/CNN-LSTM<br/>Model]
-    D --> E[Attention Layer<br/>Interpretability]
-    E --> F[RUL Prediction]
-    F --> G[Dashboard API<br/>JSON Export]
-    
-    style A fill:#e3f2fd
-    style B fill:#fff3e0
-    style C fill:#f3e5f5
-    style D fill:#e8f5e9
-    style E fill:#fce4ec
-    style F fill:#fff9c4
-    style G fill:#e0f2f1
-```
-
-**Pipeline Stages:**
-1. **Feature Engineering:** Rolling statistics (window=5) and EWMA (α=0.1) extract degradation trends
-2. **Windowing:** 30-cycle sequences with piecewise-linear RUL labels (cap=125)
-3. **Model:** BiLSTM or CNN-LSTM processes temporal patterns
-4. **Attention:** Highlights critical cycles for interpretability
-5. **Output:** RUL prediction + anomaly status + top contributing sensors
-
----
-
-## Option 3: Side-by-Side Comparison
-
 ### BiLSTM vs CNN-LSTM
-
 ```mermaid
 graph TD
     subgraph BiLSTM
@@ -166,7 +105,6 @@ graph TD
 **CNN-LSTM:** More efficient, extracts local patterns before LSTM processing
 
 ---
-
 ## 📁 Architecture & Dashboard Handoff
 
 Our modular architecture ensures the model is scalable to different machinery with minimal retraining, and provides a seamless handoff to frontend dashboards.
