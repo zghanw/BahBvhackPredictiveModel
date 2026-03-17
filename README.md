@@ -76,7 +76,6 @@ The Commercial Modular Aero-Propulsion System Simulation (CMAPSS) dataset simula
 **RUL Labeling:** We apply piecewise-linear RUL capping at 125 cycles (engines are healthy early in life), then linearly decrease RUL to 0 at failure. This reflects real-world degradation patterns where wear accelerates near end-of-life.
 
 ---
-```markdown
 ## 🏗️ Model Architecture
 
 ### BiLSTM with Attention
@@ -102,7 +101,6 @@ Our BiLSTM model processes 30-cycle windows bidirectionally, allowing it to unde
 - **Attention Weights:** Provides interpretability by highlighting critical cycles
 - **Dropout Regularization:** Prevents overfitting (0.3 dropout rate)
 - **Parameters:** ~683K trainable parameters
-```
 
 ---
 
@@ -135,14 +133,10 @@ graph LR
 3. **Model:** BiLSTM or CNN-LSTM processes temporal patterns
 4. **Attention:** Highlights critical cycles for interpretability
 5. **Output:** RUL prediction + anomaly status + top contributing sensors
-```
 
 ---
 
 ## Option 3: Side-by-Side Comparison
-
-```markdown
-## 🏗️ Model Architectures
 
 ### BiLSTM vs CNN-LSTM
 
@@ -170,7 +164,6 @@ graph TD
 
 **BiLSTM:** Best for temporal context, higher parameter count
 **CNN-LSTM:** More efficient, extracts local patterns before LSTM processing
-```
 
 ---
 
