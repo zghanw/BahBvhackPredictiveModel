@@ -26,12 +26,19 @@ We developed a robust, scalable PyTorch pipeline tailored to the constraints of 
 
 Our pipeline significantly outperforms the hackathon targets, proving its readiness for real-world SME deployment.
 
-# CMAPSS FD001
+### CMAPSS FD001
 | Metric     | Target | **Our Result (CNN-LSTM)** | **Our Result (BiLSTM)** |
 |------------|--------|---------------------------|-------------------------|
 | **RMSE**   | < 30   | **11.03** cycles          | **10.24** cycles        |
 | **MAE**    | < 20   | **15.26** cycles          | **14.28** cycles        |
 | **NASA Score** | -  | **454.84**                | **406.62**              |
+
+### CMAPSS FD002
+| Metric     | Target | **Our Result (CNN-LSTM)** | **Our Result (BiLSTM)** |
+|------------|--------|---------------------------|-------------------------|
+| **RMSE**   | < 30   | **13.30** cycles          | **14.35** cycles        |
+| **MAE**    | < 20   | **19.22** cycles          | **19.84** cycles        |
+| **NASA Score** | -  | **2693.88**                | **2664.65**              |
 
 *Note: The NASA Score is calculated strictly on the last recorded cycle of each test engine (Official CMAPSS Benchmark standard), while MAE and RMSE showcase our model's performance on continuous real-time sequences.*
 
@@ -79,7 +86,7 @@ pip install -r requirements.txt
 python -m src.train  --arch (bilstm/cnn_lstm) --subset FD00(1-4)
 
 # Evaluate predictions and generate interpretability plots
-python -m src.evaluate
+python -m src.evaluate --arch (bilstm/cnn_lstm) --subset FD00(1-4)
 ```
 
 This will automatically save all visualizations to the `outputs/figures/` directory, including:
