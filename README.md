@@ -2,6 +2,8 @@
 
 **Team Britney and her Bodyguards** present a hackathon-grade deep learning pipeline designed to solve critical maintenance challenges for ASEAN SMEs. By analyzing multivariate sensor time-series data, our model predicts the Remaining Useful Life (RUL) of industrial machinery, shifting factories from inefficient reactive fixes to strategic proactive planning.
 
+![Python](https://img.shields.io/badge/Python-3.13-blue) ![Malaysia](https://img.shields.io/badge/Region-Malaysia-red) ![Scientific](https://img.shields.io/badge/Scientific-Algorithms-purple)
+
 **Track:** Machine Learning (Time-Series / Remaining Useful Life Estimation)  
 **Primary Goal:** SDG 9: Industry, Innovation, and Infrastructure (Target 9.4)
 
