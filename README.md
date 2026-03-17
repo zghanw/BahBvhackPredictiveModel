@@ -131,7 +131,7 @@ vhackusm/
 
 ## 🚀 Quick Start
 
-Complete reproduction steps from scratch. Training takes ~15 minutes on GPU, ~2 hours on CPU per dataset.
+Complete reproduction steps from scratch. Training takes ~2 hours on CPU for the whole datasets (~30 mins per sub-dataset).
 
 ### 1. Clone & Environment Setup
 ```bash
