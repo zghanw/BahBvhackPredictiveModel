@@ -143,7 +143,7 @@ Complete reproduction steps from scratch. Training takes ~2 hours on CPU for the
 git clone https://github.com/zghanw/BahBvhackPredictiveModel.git
 cd BahBvhackPredictiveModel
 
-# Create virtual environment (requires Python 3.8+)
+# Create virtual environment (requires Python 3.12+)
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 
