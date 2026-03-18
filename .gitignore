@@ -1,3 +1,5 @@
 venv/
-data/raw/* 
-outputs/figures/*  
+data/raw/*
+!data/raw/.gitkeep
+outputs/figures/*
+!outputs/figures/.gitkeep
