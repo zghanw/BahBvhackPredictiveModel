@@ -123,10 +123,12 @@ vhackusm/
 │   ├── train.py            # Training sequence with early stopping & gradient clipping
 │   ├── evaluate.py         # Standardized Target Metrics (MAE, RMSE, NASA Score)
 │   ├── visualize.py        # Generates RUL curves, Error Distributions, & Attention Maps
-│   └── inference_api.py    # 🔴 REAL-TIME DASHBOARD API: Exports predictive JSON feed
-└── outputs/
+│   └── inference_api.py    # Real-time dashboard API: Exports predictive JSON feed
+└── outputs/ 
     ├── dashboard_data.json # Live feed for frontend (RUL, Status, Top Sensors)
-    └── figures/            # Visualizations of model interpretability
+    ├── figures/            # Visualizations of model interpretability
+    └── checkpoints/ 
+        └── best_model.pt   # Trained model weights
 ```
 
 ---
