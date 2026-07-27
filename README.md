@@ -4,7 +4,7 @@
 
 A production-grade deep learning pipeline that predicts the Remaining Useful Life (RUL) of industrial machinery from multivariate sensor time-series data. Built to shift ASEAN SME factories from reactive fixes to data-driven proactive maintenance.
 
-![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?logo=pytorch&logoColor=white) ![Python](https://img.shields.io/badge/Python-3.13-blue) ![Deep Learning](https://img.shields.io/badge/Deep_Learning-LSTM-blueviolet) ![Malaysia](https://img.shields.io/badge/Region-Malaysia-red) ![Hackathon](https://img.shields.io/badge/vHack_USM-2026-orange)
+![PyTorch](https://img.shields.io/badge/PyTorch-EE4C2C?logo=pytorch&logoColor=white) ![Python](https://img.shields.io/badge/Python-3.13-blue) ![Deep Learning](https://img.shields.io/badge/Deep_Learning-LSTM-blueviolet) ![Malaysia](https://img.shields.io/badge/Region-Malaysia-red) ![Hackathon](https://img.shields.io/badge/vHack_USM-2026-orange) ![License](https://img.shields.io/badge/License-MIT-green)
 
 **Track:** Machine Learning (Time-Series / Remaining Useful Life Estimation)  
 **Primary Goal:** SDG 9: Industry, Innovation, and Infrastructure (Target 9.4)
@@ -266,6 +266,12 @@ This transparency allows operators to:
 | **Logic**      | Reads the 30-cycle window in both directions to understand health from history and future context. | Uses a CNN to extract local severity patterns, then an LSTM to model overall long-range degradation. |
 | **Complexity** | High (~683K parameters)                                                                | Medium (~323K parameters)                                                                              |
 | **Strength**   | Temporal context                                                                       | Pattern extraction and computational efficiency                                                        |
+
+---
+
+## License
+
+This project is licensed under the [MIT License](LICENSE). You are free to use, modify, and distribute this software with attribution.
 
 ---
 
