@@ -167,7 +167,8 @@ def train(config: Config = cfg, smoke_test: bool = False):
     scheduler  = CosineAnnealingLR(optimizer, T_max=config.train.epochs, eta_min=1e-6) \
                  if config.train.scheduler == "cosine" else None
 
-    stopper    = EarlyStopping(config.train.patience, config.train.min_delta)
+    stopper    = EarlyStopping(config.train.patience, config.train.min_delta,
+                               ckpt_path=CKPT_DIR / f"best_model_{config.data.subset}.pt")
 
     # ── Epoch loop ────────────────────────────────────────────────────────
     print(f"\nTraining for up to {config.train.epochs} epochs ...\n")

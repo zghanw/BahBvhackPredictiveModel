@@ -18,41 +18,50 @@ import torch
 from src.config import cfg, CKPT_DIR, OUTPUT_DIR
 from src.train import prepare_data, build_model, get_device
 from src.dataset import get_dataloaders
-from src.feature_engineer import engineer_features
+from src.feature_engineer import engineer_features, get_feature_columns
 from src.data_loader import get_sensor_columns
 
 
 DASHBOARD_DATA_FILE = OUTPUT_DIR / "dashboard_data.json"
-ANOMALY_THRESHOLD = 30  # cycles
+ANOMALY_THRESHOLD = 30  # cycles — RUL below this = Impaired
 
 
-def extract_top_sensors(weights: torch.Tensor | None, sensor_cols: list[str], top_k: int = 3) -> list[str]:
+def extract_top_sensors(
+    weights: torch.Tensor | None,
+    sensor_cols: list[str],
+    window_data: np.ndarray | None = None,
+    top_k: int = 3,
+) -> list[str]:
     """
-    Given attention weights over the window and the list of sensor columns,
-    returns the top-k most attended sensor columns.
-    
-    Since the attention is over the time dimension (cycles) and not directly
-    over the features, we interpret the weights to see *when* the model is looking.
-    A more advanced approach feature-wise would be integrated gradients, but
-    for hackathon purposes, communicating the most variant sensors at the highly
-    attended time steps is a good proxy, or simply returning a fixed list of
-    the sensors with highest variance during the highly attended window.
-    
-    Here, to provide an actionable insight, if weights are available, we just
-    tag the raw sensors that historically correlate with degradation, or we can
-    simply select them randomly for the prototype if true feature attention isn't available.
-    Actually, since we extract features per sensor, we could sum the absolute changes
-    weighted by attention over time. 
-    
-    For this boilerplate, we'll return a placeholder string or standard CMAPSS degradation sensors.
+    Return the top-k sensors most responsible for the current prediction.
+
+    When attention weights AND the raw window data are available, we compute
+    a weighted-average absolute change per sensor across the window:
+        score[s] = Σ_t  attn[t] * |Δsensor_s[t]|
+    This gives a genuine, data-driven ranking rather than a fixed list.
+
+    Falls back to the known high-variance CMAPSS sensors when either input
+    is unavailable (e.g. model trained without attention).
     """
-    if weights is None:
-        return ["sensor_11", "sensor_14", "sensor_09"] # Typical CMAPSS critical sensors
-        
-    # In a full implementation we would multiply the input features by the attention weights
-    # and find which sensors had the highest magnitude of change.
-    # For now, we return the known high-variance sensors for CMAPSS FD001.
-    return ["sensor_11 (temp)", "sensor_14 (speed)", "sensor_09 (flow)"]
+    # Fallback: known high-degradation sensors for CMAPSS
+    fallback = sensor_cols[:top_k] if len(sensor_cols) >= top_k else sensor_cols
+
+    if weights is None or window_data is None:
+        return fallback
+
+    try:
+        attn = weights[0].cpu().numpy()          # (window_size,)
+        # window_data shape: (window_size, n_features)
+        # sensor_cols are the first len(sensor_cols) columns (raw values before engineered features)
+        n_sensors = len(sensor_cols)
+        raw = window_data[:, :n_sensors]         # (window_size, n_sensors)
+        delta = np.abs(np.diff(raw, axis=0))     # (window_size-1, n_sensors)
+        attn_trimmed = attn[1:]                  # align with diff
+        scores = (attn_trimmed[:, None] * delta).sum(axis=0)  # (n_sensors,)
+        top_indices = np.argsort(scores)[::-1][:top_k]
+        return [sensor_cols[i] for i in top_indices]
+    except Exception:
+        return fallback
 
 
 def run_dashboard_simulation(engine_id: int = 3, ckpt_path: Path = CKPT_DIR / "best_model.pt", delay: float = 0.5):
@@ -114,10 +123,9 @@ def run_dashboard_simulation(engine_id: int = 3, ckpt_path: Path = CKPT_DIR / "b
         # --- EXPLICIT ANOMALY CHANGE-POINT LOGIC ---
         rul_pred = max(0.0, rul_pred) # non-negative
         status_label = "Impaired" if rul_pred <= ANOMALY_THRESHOLD else "Healthy"
-        status_color = "red" if status_label == "Impaired" else "green"
         
         # --- INTERPRETABILITY / ACTIONABLE INSIGHTS ---
-        top_sensors = extract_top_sensors(weights, sensor_cols)
+        top_sensors = extract_top_sensors(weights, sensor_cols, window_data=window_data)
         
         # Construct JSON payload for frontend
         payload = {

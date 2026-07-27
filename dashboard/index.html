@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PredictiveMaint</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- ── Header ── -->
+  <header class="header">
+    <div class="header-left">
+      <span class="logo-icon">⚙</span>
+      <div>
+        <h1 class="header-title">PredictiveMaint</h1>
+        <p class="header-sub">AI-Driven RUL Estimator · ASEAN SME Resilience</p>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="subset-selector">
+        <label for="subsetSelect">Dataset</label>
+        <select id="subsetSelect">
+          <option value="FD001">FD001 — Single condition</option>
+          <option value="FD002">FD002 — Multi condition</option>
+          <option value="FD003">FD003 — Single condition</option>
+          <option value="FD004">FD004 — Multi condition / fault</option>
+        </select>
+      </div>
+      <div id="apiStatus" class="api-badge api-connecting">● Connecting…</div>
+    </div>
+  </header>
+
+  <!-- ── Model Metadata Bar ── -->
+  <div class="meta-bar" id="metaBar">
+    <span class="meta-item" id="metaArch">Arch: —</span>
+    <span class="meta-sep">|</span>
+    <span class="meta-item" id="metaRmse">RMSE: —</span>
+    <span class="meta-sep">|</span>
+    <span class="meta-item" id="metaMae">MAE: —</span>
+    <span class="meta-sep">|</span>
+    <span class="meta-item" id="metaWindow">Window: —</span>
+    <span class="meta-sep">|</span>
+    <span class="meta-item" id="metaFeatures">Features: —</span>
+    <span class="meta-sep">|</span>
+    <span class="meta-item" id="metaThreshold">Threshold: —</span>
+  </div>
+
+  <!-- ── Main Layout ── -->
+  <main class="main">
+
+    <!-- Left: Fleet Panel -->
+    <section class="panel fleet-panel">
+      <div class="panel-header">
+        <h2>Fleet Overview</h2>
+        <span class="engine-count" id="engineCount">— engines</span>
+      </div>
+      <div class="fleet-search">
+        <input type="text" id="fleetSearch" placeholder="Search engine ID…" />
+      </div>
+      <div class="fleet-list" id="fleetList">
+        <div class="fleet-loading">Loading fleet data…</div>
+      </div>
+    </section>
+
+    <!-- Right: Detail Panel -->
+    <section class="panel detail-panel">
+
+      <!-- Engine Header -->
+      <div class="detail-header">
+        <div>
+          <h2 id="detailTitle">Select an engine</h2>
+          <p id="detailSubtitle" class="detail-sub">Click any engine in the fleet list to inspect it</p>
+        </div>
+        <div class="detail-actions">
+          <button id="btnSimulate" class="btn btn-primary" disabled>▶ Live Simulate</button>
+          <button id="btnStop" class="btn btn-danger" disabled>■ Stop</button>
+        </div>
+      </div>
+
+      <!-- KPI Cards -->
+      <div class="kpi-row" id="kpiRow">
+        <div class="kpi-card" id="kpiRul">
+          <div class="kpi-label">Predicted RUL</div>
+          <div class="kpi-value">—</div>
+          <div class="kpi-unit">cycles</div>
+        </div>
+        <div class="kpi-card" id="kpiStatus">
+          <div class="kpi-label">Health Status</div>
+          <div class="kpi-value">—</div>
+          <div class="kpi-unit">state</div>
+        </div>
+        <div class="kpi-card" id="kpiCycle">
+          <div class="kpi-label">Current Cycle</div>
+          <div class="kpi-value">—</div>
+          <div class="kpi-unit">cycle no.</div>
+        </div>
+        <div class="kpi-card" id="kpiProgress">
+          <div class="kpi-label">Life Consumed</div>
+          <div class="kpi-value">—</div>
+          <div class="kpi-unit">% of cap</div>
+        </div>
+      </div>
+
+      <!-- RUL Chart -->
+      <div class="chart-container">
+        <div class="chart-title">Remaining Useful Life — Cycle History</div>
+        <canvas id="rulChart"></canvas>
+      </div>
+
+      <!-- Attention + Sensors Row -->
+      <div class="bottom-row">
+        <div class="panel-inner">
+          <div class="panel-inner-title">Attention Weights (last window)</div>
+          <canvas id="attnChart"></canvas>
+        </div>
+        <div class="panel-inner">
+          <div class="panel-inner-title">Top Contributing Sensors</div>
+          <div id="sensorList" class="sensor-list">
+            <div class="sensor-placeholder">Run inference to see sensor insights</div>
+          </div>
+        </div>
+        <div class="panel-inner">
+          <div class="panel-inner-title">Alert Log</div>
+          <div id="alertLog" class="alert-log"></div>
+        </div>
+      </div>
+
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

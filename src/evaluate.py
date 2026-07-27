@@ -35,10 +35,16 @@ def compute_rmse(preds: np.ndarray, targets: np.ndarray) -> float:
     return float(np.sqrt(np.mean((preds - targets) ** 2)))
 
 
+# NASA scoring constants — penalise late predictions more than early ones
+_NASA_EARLY_DENOM = 13   # d < 0: predicted early (less dangerous)
+_NASA_LATE_DENOM  = 10   # d ≥ 0: predicted late  (more dangerous, steeper penalty)
+
+
 def compute_nasa_score(preds: np.ndarray, targets: np.ndarray) -> float:
     """NASA asymmetric scoring — lower is better."""
     d = preds - targets  # positive d = late prediction (underestimating RUL)
-    score = np.where(d < 0, np.exp(-d / 13) - 1, np.exp(d / 10) - 1)
+    score = np.where(d < 0, np.exp(-d / _NASA_EARLY_DENOM) - 1,
+                             np.exp( d / _NASA_LATE_DENOM)  - 1)
     return float(np.sum(score))
 
 
@@ -93,7 +99,6 @@ def evaluate(ckpt_path: Path = CKPT_DIR / "best_model.pt"):
     # ── Official CMAPSS benchmark extraction ──────────────────────────────────
     # The official benchmark only evaluates the VERY LAST cycle of each engine.
     # Since test_loader has shuffle=False, we can find the indices of the last cycle.
-    import numpy as np
     engine_seq_counts = [max(1, len(group) - cfg.data.window_size + 1) for _, group in test_df.groupby("engine_id")]
     last_indices = np.cumsum(engine_seq_counts) - 1
 

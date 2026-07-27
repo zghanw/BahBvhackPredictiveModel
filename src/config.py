@@ -80,3 +80,12 @@ class Config:
 
 # ── Default instance ──────────────────────────────────────────────────────────
 cfg = Config()
+
+# ── Benchmark results (from README) ──────────────────────────────────────────
+# Keyed by subset → arch → metric. Used by the API metadata endpoint.
+BENCHMARK_METRICS: dict[str, dict[str, dict[str, float]]] = {
+    "FD001": {"bilstm": {"rmse": 14.28, "mae": 10.24}, "cnn_lstm": {"rmse": 15.26, "mae": 11.03}},
+    "FD002": {"bilstm": {"rmse": 19.84, "mae": 14.35}, "cnn_lstm": {"rmse": 19.22, "mae": 13.30}},
+    "FD003": {"bilstm": {"rmse": 15.31, "mae": 10.59}, "cnn_lstm": {"rmse": 15.32, "mae": 10.23}},
+    "FD004": {"bilstm": {"rmse": 25.28, "mae": 18.11}, "cnn_lstm": {"rmse": 28.41, "mae": 20.87}},
+}

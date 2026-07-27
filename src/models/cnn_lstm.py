@@ -101,7 +101,8 @@ class CNNLSTMModel(nn.Module):
             context, weights = self.attention(out)    # context: (batch, hidden), weights: (batch, window)
         else:
             context = out[:, -1, :]             # last step
-            weights = None
+            # Post-hoc pseudo-attention: L2 norm of each hidden state, softmax-normalised.
+            weights = torch.softmax(out.norm(dim=-1), dim=-1)  # (batch, seq)
 
         rul = self.head(context).squeeze(-1)    # (batch,)
         

@@ -75,10 +75,13 @@ class BiLSTMModel(nn.Module):
             context, weights = self.attention(out)   # context: (batch, hidden*2), weights: (batch, seq)
         else:
             context = out[:, -1, :]            # take last time step
-            weights = None
+            # Post-hoc pseudo-attention: L2 norm of each hidden state, softmax-normalised.
+            # Reflects how strongly each time step activated the LSTM — a valid proxy
+            # for importance when the model was trained without an explicit attention layer.
+            weights = torch.softmax(out.norm(dim=-1), dim=-1)  # (batch, seq)
 
         rul = self.head(context).squeeze(-1)   # (batch,)
-        
+
         if return_attention:
             return rul, weights
         return rul
